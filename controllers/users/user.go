@@ -6,9 +6,10 @@ import (
 	"github.com/spayder/bookstore_users-api/services"
 	"github.com/spayder/bookstore_users-api/utils/errors"
 	"net/http"
+	"strconv"
 )
 
-func Create(c *gin.Context)  {
+func CreateHandler(c *gin.Context)  {
 	var user users.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -27,6 +28,21 @@ func Create(c *gin.Context)  {
 	c.JSON(http.StatusCreated, result)
 }
 
-func Get(c *gin.Context)  {
-	c.String(http.StatusOK, "from users get")
+func GetHandler(c *gin.Context)  {
+	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+
+	if err != nil {
+		userErr := errors.BadRequestError("invalid user id")
+		c.JSON(userErr.Code, userErr)
+		return
+	}
+
+	result, resultErr := services.GetUser(userId)
+
+	if resultErr != nil {
+		c.JSON(resultErr.Code, resultErr)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }
