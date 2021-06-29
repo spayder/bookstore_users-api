@@ -5,7 +5,7 @@ import (
 )
 
 var router = gin.Default()
-func StartApplication()  {
+func Handle()  {
 	MapUrls()
 	router.Run(":8081")
 }
