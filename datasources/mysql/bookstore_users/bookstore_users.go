@@ -8,25 +8,16 @@ import (
 	"log"
 )
 
-const (
-	db_username = "DB_USERNAME"
-	db_password = "DB_PASSWORD"
-	db_host = "DB_HOST"
-	db_port = "DB_PORT"
-	db_schema = "DB_SCHEMA"
-)
-
 var (
 	Client *sql.DB
 )
 
 func init()  {
-
-	username := config.Env(db_username)
-	password := config.Env(db_password)
-	host 	 := config.Env(db_host)
-	port 	 := config.Env(db_port)
-	schema   := config.Env(db_schema)
+	username := config.Env("DB_USERNAME")
+	password := config.Env("DB_PASSWORD")
+	host 	 := config.Env("DB_HOST")
+	port 	 := config.Env("DB_PORT")
+	schema   := config.Env("DB_SCHEMA")
 
 	dataSourceName := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8",
