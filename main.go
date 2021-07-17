@@ -2,6 +2,6 @@ package main
 
 import "github.com/spayder/bookstore_users-api/app"
 
-func main()  {
+func main() {
 	app.Handle()
 }
