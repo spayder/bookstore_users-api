@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func CreateHandler(c *gin.Context)  {
+func CreateHandler(c *gin.Context) {
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		restErr := errors.BadRequestError("invalid json body")
@@ -27,7 +27,7 @@ func CreateHandler(c *gin.Context)  {
 	c.JSON(http.StatusCreated, result)
 }
 
-func GetHandler(c *gin.Context)  {
+func GetHandler(c *gin.Context) {
 	userId, userErr := getUserId(c.Param("user_id"))
 	if userErr != nil {
 		c.JSON(userErr.Code, userErr)
@@ -90,4 +90,16 @@ func getUserId(userIdParam string) (int64, *errors.RestErr) {
 	}
 
 	return userId, nil
+}
+
+func SearchHandler(c *gin.Context) {
+	status := c.Query("status")
+
+	users, err := services.Search(status)
+	if err != nil {
+		c.JSON(err.Code, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, users)
 }

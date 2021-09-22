@@ -2,14 +2,21 @@ package services
 
 import (
 	"github.com/spayder/bookstore_users-api/domain/users"
+	"github.com/spayder/bookstore_users-api/utils/dates"
 	"github.com/spayder/bookstore_users-api/utils/errors"
 )
 
-func CreateUser(user users.User)  (*users.User, *errors.RestErr) {
+const (
+	StatusActive = "active"
+)
+
+func CreateUser(user users.User) (*users.User, *errors.RestErr) {
 	if err := user.Validate(); err != nil {
 		return nil, err
 	}
 
+	user.CreatedAt = dates.GetNowString()
+	user.Status = StatusActive
 	if err := user.Save(); err != nil {
 		return nil, err
 	}
@@ -51,7 +58,7 @@ func UpdateUser(user users.User) (*users.User, *errors.RestErr) {
 	return current, nil
 }
 
-func DeleteUser(userId int64) *errors.RestErr{
+func DeleteUser(userId int64) *errors.RestErr {
 	user := &users.User{Id: userId}
 
 	if err := user.Delete(); err != nil {
@@ -59,4 +66,9 @@ func DeleteUser(userId int64) *errors.RestErr{
 	}
 
 	return nil
+}
+
+func Search(status string) ([]users.User, *errors.RestErr) {
+	userDAO := &users.User{}
+	return userDAO.FindByStatus(status)
 }

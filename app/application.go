@@ -2,10 +2,13 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spayder/bookstore_users-api/utils/config"
 )
 
 var router = gin.Default()
-func Handle()  {
+
+func Handle() {
 	MapUrls()
-	router.Run(":8081")
+	port := ":" + config.Env("APP_PORT")
+	router.Run(port)
 }
