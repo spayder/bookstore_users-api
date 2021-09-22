@@ -11,4 +11,5 @@ func MapUrls()  {
 	router.GET("/users/:user_id", users.GetHandler)
 	router.POST("/users", users.CreateHandler)
 	router.PUT("/users/:user_id", users.UpdateHandler)
+	router.DELETE("/users/:user_id", users.DeleteHandler)
 }

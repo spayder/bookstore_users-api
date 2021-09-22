@@ -65,3 +65,19 @@ func (user *User) Update() *errors.RestErr {
 
 	return nil
 }
+
+func (user *User) Delete() *errors.RestErr {
+	query := "DELETE FROM users WHERE id = ?"
+
+	stmt, err := bookstore_users.Client.Prepare(query)
+	if err != nil {
+		return errors.InternalServerError(err.Error())
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(user.Id); err != nil {
+		return mysql.ParseError(err)
+	}
+
+	return nil
+}

@@ -28,9 +28,8 @@ func CreateHandler(c *gin.Context)  {
 }
 
 func GetHandler(c *gin.Context)  {
-	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		userErr := errors.BadRequestError("invalid user id")
+	userId, userErr := getUserId(c.Param("user_id"))
+	if userErr != nil {
 		c.JSON(userErr.Code, userErr)
 		return
 	}
@@ -45,9 +44,8 @@ func GetHandler(c *gin.Context)  {
 }
 
 func UpdateHandler(c *gin.Context) {
-	userId, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	userId, userErr := getUserId(c.Param("user_id"))
 	if userErr != nil {
-		userErr := errors.BadRequestError("invalid user id")
 		c.JSON(userErr.Code, userErr)
 		return
 	}
@@ -68,4 +66,28 @@ func UpdateHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+func DeleteHandler(c *gin.Context) {
+	userId, userErr := getUserId(c.Param("user_id"))
+	if userErr != nil {
+		c.JSON(userErr.Code, userErr)
+		return
+	}
+
+	if err := services.DeleteUser(userId); err != nil {
+		c.JSON(err.Code, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"success": "true"})
+}
+
+func getUserId(userIdParam string) (int64, *errors.RestErr) {
+	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
+	if userErr != nil {
+		return 0, errors.BadRequestError("invalid user id")
+	}
+
+	return userId, nil
 }
