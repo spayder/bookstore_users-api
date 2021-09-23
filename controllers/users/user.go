@@ -9,6 +9,15 @@ import (
 	"strconv"
 )
 
+func getUserId(userIdParam string) (int64, *errors.RestErr) {
+	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
+	if userErr != nil {
+		return 0, errors.BadRequestError("invalid user id")
+	}
+
+	return userId, nil
+}
+
 func CreateHandler(c *gin.Context) {
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -24,7 +33,7 @@ func CreateHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, result.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func GetHandler(c *gin.Context) {
@@ -40,7 +49,7 @@ func GetHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func UpdateHandler(c *gin.Context) {
@@ -65,7 +74,7 @@ func UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func DeleteHandler(c *gin.Context) {
@@ -83,15 +92,6 @@ func DeleteHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"success": "true"})
 }
 
-func getUserId(userIdParam string) (int64, *errors.RestErr) {
-	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
-	if userErr != nil {
-		return 0, errors.BadRequestError("invalid user id")
-	}
-
-	return userId, nil
-}
-
 func SearchHandler(c *gin.Context) {
 	status := c.Query("status")
 
@@ -101,5 +101,5 @@ func SearchHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
 }

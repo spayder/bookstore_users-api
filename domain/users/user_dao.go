@@ -26,7 +26,7 @@ func (user *User) Get() *errors.RestErr {
 
 func (user *User) Save() *errors.RestErr {
 	stmt, err := bookstore_users.Client.Prepare(
-		"INSERT INTO users(first_name, last_name, email, created_at, status) VALUES (?, ?, ?, ?, ?)",
+		"INSERT INTO users(first_name, last_name, email, created_at, status, password) VALUES (?, ?, ?, ?, ?, ?)",
 	)
 	if err != nil {
 		return errors.InternalServerError(err.Error())
@@ -35,7 +35,7 @@ func (user *User) Save() *errors.RestErr {
 	defer stmt.Close()
 
 	user.CreatedAt = dates.GetNowString()
-	insertResult, err := stmt.Exec(user.FirstName, user.LastName, user.Email, user.CreatedAt, user.Status)
+	insertResult, err := stmt.Exec(user.FirstName, user.LastName, user.Email, user.CreatedAt, user.Status, user.Password)
 	if err != nil {
 		return mysql.ParseError(err)
 	}
