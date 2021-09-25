@@ -3,7 +3,7 @@ package users
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spayder/bookstore_users-api/domain/users"
-	"github.com/spayder/bookstore_users-api/services"
+	"github.com/spayder/bookstore_users-api/services/user_services"
 	"github.com/spayder/bookstore_users-api/utils/errors"
 	"net/http"
 	"strconv"
@@ -12,7 +12,7 @@ import (
 func getUserId(userIdParam string) (int64, *errors.RestErr) {
 	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
 	if userErr != nil {
-		return 0, errors.BadRequestError("invalid user id")
+		return 0, errors.BadRequestError("invalid user_services id")
 	}
 
 	return userId, nil
@@ -26,7 +26,7 @@ func CreateHandler(c *gin.Context) {
 		return
 	}
 
-	result, resultErr := services.UsersService.CreateUser(user)
+	result, resultErr := user_services.UsersService.CreateUser(user)
 
 	if resultErr != nil {
 		c.JSON(resultErr.Code, resultErr)
@@ -43,7 +43,7 @@ func GetHandler(c *gin.Context) {
 		return
 	}
 
-	result, resultErr := services.UsersService.GetUser(userId)
+	result, resultErr := user_services.UsersService.GetUser(userId)
 	if resultErr != nil {
 		c.JSON(resultErr.Code, resultErr)
 		return
@@ -68,7 +68,7 @@ func UpdateHandler(c *gin.Context) {
 
 	user.Id = userId
 
-	result, err := services.UsersService.UpdateUser(user)
+	result, err := user_services.UsersService.UpdateUser(user)
 	if err != nil {
 		c.JSON(err.Code, err)
 		return
@@ -84,7 +84,7 @@ func DeleteHandler(c *gin.Context) {
 		return
 	}
 
-	if err := services.UsersService.DeleteUser(userId); err != nil {
+	if err := user_services.UsersService.DeleteUser(userId); err != nil {
 		c.JSON(err.Code, err)
 		return
 	}
@@ -95,7 +95,7 @@ func DeleteHandler(c *gin.Context) {
 func SearchHandler(c *gin.Context) {
 	status := c.Query("status")
 
-	users, err := services.UsersService.SearchUser(status)
+	users, err := user_services.UsersService.SearchUser(status)
 	if err != nil {
 		c.JSON(err.Code, err)
 		return

@@ -1,4 +1,4 @@
-package services
+package user_services
 
 import (
 	"github.com/spayder/bookstore_users-api/domain/users"
@@ -17,13 +17,6 @@ var (
 
 type userService struct {}
 
-type userServiceInterface interface {
-	GetUser(int64) (*users.User, *errors.RestErr)
-	CreateUser(users.User) (*users.User, *errors.RestErr)
-	UpdateUser(users.User) (*users.User, *errors.RestErr)
-	DeleteUser(int64) *errors.RestErr
-	SearchUser(string) (users.Users, *errors.RestErr)
-}
 
 func (u *userService) GetUser(userId int64) (*users.User, *errors.RestErr) {
 	user := &users.User{Id: userId}
