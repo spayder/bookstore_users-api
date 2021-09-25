@@ -26,14 +26,14 @@ func CreateHandler(c *gin.Context) {
 		return
 	}
 
-	result, resultErr := services.CreateUser(user)
+	result, resultErr := services.UsersService.CreateUser(user)
 
 	if resultErr != nil {
 		c.JSON(resultErr.Code, resultErr)
 		return
 	}
 
-	c.JSON(http.StatusCreated, result.Marshall(c.GetHeader("X-Public") == "true"))
+	c.JSON(http.StatusCreated, result.Marshall(isPublicRequest(c)))
 }
 
 func GetHandler(c *gin.Context) {
@@ -43,13 +43,13 @@ func GetHandler(c *gin.Context) {
 		return
 	}
 
-	result, resultErr := services.GetUser(userId)
+	result, resultErr := services.UsersService.GetUser(userId)
 	if resultErr != nil {
 		c.JSON(resultErr.Code, resultErr)
 		return
 	}
 
-	c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
+	c.JSON(http.StatusOK, result.Marshall(isPublicRequest(c)))
 }
 
 func UpdateHandler(c *gin.Context) {
@@ -68,13 +68,13 @@ func UpdateHandler(c *gin.Context) {
 
 	user.Id = userId
 
-	result, err := services.UpdateUser(user)
+	result, err := services.UsersService.UpdateUser(user)
 	if err != nil {
 		c.JSON(err.Code, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
+	c.JSON(http.StatusOK, result.Marshall(isPublicRequest(c)))
 }
 
 func DeleteHandler(c *gin.Context) {
@@ -84,7 +84,7 @@ func DeleteHandler(c *gin.Context) {
 		return
 	}
 
-	if err := services.DeleteUser(userId); err != nil {
+	if err := services.UsersService.DeleteUser(userId); err != nil {
 		c.JSON(err.Code, err)
 		return
 	}
@@ -95,11 +95,15 @@ func DeleteHandler(c *gin.Context) {
 func SearchHandler(c *gin.Context) {
 	status := c.Query("status")
 
-	users, err := services.Search(status)
+	users, err := services.UsersService.SearchUser(status)
 	if err != nil {
 		c.JSON(err.Code, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
+	c.JSON(http.StatusOK, users.Marshall(isPublicRequest(c)))
+}
+
+func isPublicRequest(c *gin.Context) bool {
+	return c.GetHeader("X-Public") == "true"
 }

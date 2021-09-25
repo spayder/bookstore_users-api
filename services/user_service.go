@@ -11,7 +11,30 @@ const (
 	StatusActive = "active"
 )
 
-func CreateUser(user users.User) (*users.User, *errors.RestErr) {
+var (
+	UsersService userServiceInterface = &userService{}
+)
+
+type userService struct {}
+
+type userServiceInterface interface {
+	GetUser(int64) (*users.User, *errors.RestErr)
+	CreateUser(users.User) (*users.User, *errors.RestErr)
+	UpdateUser(users.User) (*users.User, *errors.RestErr)
+	DeleteUser(int64) *errors.RestErr
+	SearchUser(string) (users.Users, *errors.RestErr)
+}
+
+func (u *userService) GetUser(userId int64) (*users.User, *errors.RestErr) {
+	user := &users.User{Id: userId}
+	if err := user.Get(); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (u *userService) CreateUser(user users.User) (*users.User, *errors.RestErr) {
 	if err := user.Validate(); err != nil {
 		return nil, err
 	}
@@ -26,17 +49,8 @@ func CreateUser(user users.User) (*users.User, *errors.RestErr) {
 	return &user, nil
 }
 
-func GetUser(userId int64) (*users.User, *errors.RestErr) {
-	user := &users.User{Id: userId}
-	if err := user.Get(); err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
-func UpdateUser(user users.User) (*users.User, *errors.RestErr) {
-	current, err := GetUser(user.Id)
+func (u *userService) UpdateUser(user users.User) (*users.User, *errors.RestErr) {
+	current, err := u.GetUser(user.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +74,7 @@ func UpdateUser(user users.User) (*users.User, *errors.RestErr) {
 	return current, nil
 }
 
-func DeleteUser(userId int64) *errors.RestErr {
+func (u *userService) DeleteUser(userId int64) *errors.RestErr {
 	user := &users.User{Id: userId}
 
 	if err := user.Delete(); err != nil {
@@ -70,7 +84,7 @@ func DeleteUser(userId int64) *errors.RestErr {
 	return nil
 }
 
-func Search(status string) (users.Users, *errors.RestErr) {
+func (u *userService) SearchUser(status string) (users.Users, *errors.RestErr) {
 	userDAO := &users.User{}
 	return userDAO.FindByStatus(status)
 }
